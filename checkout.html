@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koszyk – Demo Shop</title>
+<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- TU WKLEJ KOD GTM DO <head> -->
+<style>body{font-family:sans-serif;max-width:720px;margin:auto;padding:16px}button{padding:8px 12px;cursor:pointer}</style>
+</head>
+<body>
+<!-- TU WKLEJ KOD GTM DO <body> (noscript) -->
+<h1>Koszyk</h1>
+<ul id="cart"></ul>
+<p id="total"></p>
+<button id="pay">Zapłać</button>
+<p><a href="index.html">Wróć do sklepu</a></p>
+<script>
+const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+const items = cart.map(p => ({...p, quantity:1}));
+const value = cart.reduce((s, p) => s + p.price, 0);
+document.getElementById("cart").innerHTML = cart.map(p => `<li>${p.item_name} – ${p.price} PLN</li>`).join("");
+document.getElementById("total").textContent = `Razem: ${value} PLN`;
+
+// Event: rozpoczęcie płatności
+if (cart.length) {
+  dataLayer.push({ecommerce:null});
+  dataLayer.push({event:"begin_checkout", ecommerce:{currency:"PLN", value, items}});
+}
+
+document.getElementById("pay").onclick = () => {
+  if (!cart.length) return;
+  // Event: zakup
+  dataLayer.push({ecommerce:null});
+  dataLayer.push({event:"purchase", ecommerce:{transaction_id:"T" + Date.now(), currency:"PLN", value, items}});
+  localStorage.removeItem("cart");
+  document.body.innerHTML = "<h1>Dziękujemy za zamówienie!</h1><p><a href='index.html'>Wróć do sklepu</a></p>";
+};
+</script>
+</body>
+</html>
