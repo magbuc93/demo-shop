@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo Shop</title>
+<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- TU WKLEJ KOD GTM DO <head> -->
+<style>
+  body{font-family:sans-serif;max-width:720px;margin:auto;padding:16px}
+  .p{border:1px solid #ddd;border-radius:8px;padding:12px;margin:8px 0}
+  button{padding:8px 12px;cursor:pointer}
+</style>
+</head>
+<body>
+<!-- TU WKLEJ KOD GTM DO <body> (noscript) -->
+<h1>Demo Shop</h1>
+<div id="products"></div>
+<p><a href="checkout.html">Przejdź do koszyka</a></p>
+<script>
+const products = [
+  {item_id:"SKU1", item_name:"Kolczyki Luna", item_category:"Kolczyki", price:79},
+  {item_id:"SKU2", item_name:"Naszyjnik Sol", item_category:"Naszyjniki", price:129},
+  {item_id:"SKU3", item_name:"Bransoletka Mare", item_category:"Bransoletki", price:99}
+];
+
+// Event: wyświetlenie listy produktów
+dataLayer.push({ecommerce:null});
+dataLayer.push({event:"view_item_list", ecommerce:{item_list_name:"Strona główna", items:products}});
+
+const box = document.getElementById("products");
+products.forEach(p => {
+  const d = document.createElement("div");
+  d.className = "p";
+  d.innerHTML = `<b>${p.item_name}</b> – ${p.price} PLN <button>Dodaj do koszyka</button>`;
+  d.querySelector("button").onclick = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push(p);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    // Event: dodanie do koszyka
+    dataLayer.push({ecommerce:null});
+    dataLayer.push({event:"add_to_cart", ecommerce:{currency:"PLN", value:p.price, items:[{...p, quantity:1}]}});
+    d.querySelector("button").textContent = "Dodano ✓";
+  };
+  box.appendChild(d);
+});
+</script>
+</body>
+</html>
